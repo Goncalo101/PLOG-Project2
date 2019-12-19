@@ -1,0 +1,22 @@
+Problema: Planeamento de Estudo
+Estruturas:
+-> Estudante: contem as cadeiras a que esta inscrito.
+-> Cadeira: numero de trabalhos, numero de horas de estudo individual semanal (elementos do grupo, prazo, 
+    horas).
+
+-> Dia: Lista com tantos elementos quantos slots existem em cada dia.
+-> Horario: Composicao dos slots alocados em cada semana 
+    [ [[], [], [], ...], [[], [], [], ...], [[], [], [], ...] ] - lista contendo o horario de cada semana 
+    para cada pessoa.
+
+Entrada: Estudantes, Cadeiras.
+Saída: Horário semanal de cada estudante, cumprindo o objetivo.
+
+Objetivo: Maximizar o tempo livre de maneira a que os trabalhos sejam entregues a tempo, sem penalizacoes.
+
+Notas:
+-> Cada hora de trabalho semanal não realizada é transportada para a semana seguinte, à qual acresce meia hora de penalização.
+-> Para poder acomodar alocações de tempo de meia hora, os slots devem ser de meia hora.
+-> O problema tem várias dimensões que podem aumentar o tempo de resolução de maneira exagerada:
+    -> Número de estudantes e cadeiras,
+    -> Numero de slots e dias de trabalho semanal.
