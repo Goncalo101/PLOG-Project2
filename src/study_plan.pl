@@ -1,10 +1,14 @@
 :-use_module(library(lists)).
 :-use_module(library(clpfd)).
 
+get_type(1, 'Individual').
+get_type(2, 'Group').
+
 make_tasks([], [], [], []).
 make_tasks([[Module, Type]|T], [Start|Starts], [End|Ends], [Task|Tasks]) :-
     study_hours(Module, Type, Time),
-    Task =.. [task, Start, Time, End, 1, Module],
+    get_type(Type, TypeString),
+    Task =.. [task, Start, Time, End, 1, Module-TypeString],
     make_tasks(T, Starts, Ends, Tasks).
 
 study(Student):-
