@@ -2,14 +2,14 @@
 :-use_module(library(clpfd)).
 
 make_tasks([], [], [], []).
-make_tasks([Module|T], [Start|Starts], [End|Ends], [Task|Tasks]) :-
-    study_hours(Module, Time),
+make_tasks([[Module, Type]|T], [Start|Starts], [End|Ends], [Task|Tasks]) :-
+    study_hours(Module, Type, Time),
     Task =.. [task, Start, Time, End, 1, Module],
     make_tasks(T, Starts, Ends, Tasks).
 
-study(Student) :-
+study(Student):-
     %find all modules where the student is enrolled in
-    findall(Module, enrolled_in(Student, Module), Modules),
+    findall([Module, Type], (enrolled_in(Student, Module), study_hours(Module, Type, _)), Modules),
     length(Modules, Length),
 
     %create lists for start and end times with as many 
@@ -21,7 +21,8 @@ study(Student) :-
     make_tasks(Modules, StartTimes, EndTimes, Tasks),
     write(Tasks), nl,
 
-    domain(StartTimes, 0, 10),
+    domain(StartTimes, 0, 59),
+    domain(EndTimes, 1, 60),
     maximum(End, EndTimes),
     cumulative(Tasks),
     labeling([minimize(End)], StartTimes),
@@ -37,21 +38,30 @@ study_time([_]).
 
 
 %enrolled_in(Student, Module).
-enrolled_in('Eme de Maria', 'ESOF').
-enrolled_in('Eme de Maria', 'PLOG').
-enrolled_in('Eme de Maria', 'LTW').
-enrolled_in('Valdisnei', 'PLOG').
-enrolled_in('Valdisnei', 'LAIG').
-enrolled_in('Umdoistres da Silva Quatro', 'LTW').
+enrolled_in('Asdrubal', 'ESOF').
+enrolled_in('Asdrubal', 'PLOG').
+enrolled_in('Asdrubal', 'LTW').
+enrolled_in('Asdrubal', 'RCOM').
+enrolled_in('Asdrubal', 'LAIG').
+enrolled_in('Felismina', 'PLOG').
+enrolled_in('Felismina', 'LAIG').
+enrolled_in('Bernardete', 'LTW').
 
-%study_hours(Module, Time).
-study_hours('ESOF', 2).
-study_hours('PLOG', 3).
-study_hours('LAIG', 5).
-study_hours('LTW', 1).
+%study_hours(Module, Type, Time).
+%Type is 1 - individual work, 2 - group work
+study_hours('ESOF', 1, 3).
+study_hours('ESOF', 2, 8).
+study_hours('PLOG', 1, 4).
+study_hours('PLOG', 2, 5).
+study_hours('LAIG', 1, 1).
+study_hours('LAIG', 2, 7).
+study_hours('LTW', 1, 3).
+study_hours('LTW', 2, 6).
+study_hours('RCOM', 1, 3).
+study_hours('RCOM', 2, 3).
 
 %group(Module, Students)
-group('PLOG', ['Eme de Maria', 'Valdisnei']).
+group('PLOG', ['Asdrubal', 'Felismina']).
 
 
 /*  Students is the list of students, then you add a list with their curricular units */
