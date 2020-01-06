@@ -1,5 +1,5 @@
-:-use_module(library(lists)).
-:-use_module(library(clpfd)).
+:- use_module(library(lists)).
+:- use_module(library(clpfd)).
 
 get_type(1, 'Individual').
 get_type(2, 'Group').
@@ -33,15 +33,24 @@ get_task([task(StartT, _, _, _, Module-'Group')|Tasks], Module, StartT).
 get_task([Task|Tasks], Module, StartT):-
     get_task(Tasks, Module, StartT).
 
-group_time(Students, Tasks):-
-    group(Module, [Student1, Student2]),
+constrain_groups(_, [], [], [], _).
+constrain_groups(Students, [[Module, Student1, Student2]|Groups], [StartT1|Starts1], [StartT2|Starts2], Tasks) :-
     nth0(Index, Students, Student1),
     nth0(Index, Tasks, Tasks1),
     nth0(Index2, Students, Student2),
     nth0(Index2, Tasks, Tasks2),
     get_task(Tasks1, Module, StartT1),
     get_task(Tasks2, Module, StartT2),
-    StartT1 #= StartT2.
+    StartT1 #= StartT2, 
+    constrain_groups(Students, Groups, Starts1, Starts2, Tasks).
+
+group_time(Students, Tasks):-
+    findall([Module, Student1, Student2], group(Module, [Student1, Student2]), GroupList),
+    length(GroupList, Length),
+    length(Starts1, Length),
+    length(Starts2, Length),
+    constrain_groups(Students, GroupList, Starts1, Starts2, Tasks),
+    nl, write(GroupList), nl, write(Starts1), nl, write(Starts2), nl.
 
 acc_constraints([], [], _).
 acc_constraints([StartTimes|StartTimess], [EndTimes|EndTimess], [Task|Tasks]) :-
