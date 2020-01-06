@@ -11,31 +11,41 @@ make_tasks([[Module, Type]|T], [Start|Starts], [End|Ends], [Task|Tasks]) :-
     Task =.. [task, Start, Time, End, 1, Module-TypeString],
     make_tasks(T, Starts, Ends, Tasks).
 
-study(Student):-
+all_tasks([], [], [], []).
+all_tasks([Student|Students], [Task|Tasks], [Start|Starts], [End|Ends]) :-
     %find all modules where the student is enrolled in
     findall([Module, Type], (enrolled_in(Student, Module), study_hours(Module, Type, _)), Modules),
     length(Modules, Length),
 
     %create lists for start and end times with as many 
     %elements as modules the student is enrolled in
-    length(StartTimes, Length),
-    length(EndTimes, Length),
-
+    length(Start, Length),
+    length(End, Length),
+    domain(Start, 0, 59),
+    domain(End, 1, 60),
+    
     %generate list of tasks to use in the cumulative predicate
-    make_tasks(Modules, StartTimes, EndTimes, Tasks),
-    write(Tasks), nl,
+    make_tasks(Modules, Start, End, Task),
+    all_tasks(Students, Tasks, Starts, Ends).
 
-    domain(StartTimes, 0, 59),
-    domain(EndTimes, 1, 60),
+acc_constraints([], [], _).
+acc_constraints([StartTimes|StartTimess], [EndTimes|EndTimess], [Task|Tasks]) :-
     maximum(End, EndTimes),
-    cumulative(Tasks),
+    cumulative(Task),
     labeling([minimize(End)], StartTimes),
+    acc_constraints(StartTimess, EndTimess, Tasks).
+
+study(Students) :-
+    all_tasks(Students, Tasks, StartTimes, EndTimes),
+    write(Tasks),
+
+    acc_constraints(StartTimes, EndTimes, Tasks),
     write(Student), nl,
     write(StartTimes), nl,
     write(EndTimes), nl, nl.
 
 study_time([H|T]):-
-    study(H),
+    study(H),S
     study_time(T).
 
 study_time([_]).
