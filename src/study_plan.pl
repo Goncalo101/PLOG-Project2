@@ -28,6 +28,21 @@ all_tasks([Student|Students], [Task|Tasks], [Start|Starts], [End|Ends]) :-
     make_tasks(Modules, Start, End, Task),
     all_tasks(Students, Tasks, Starts, Ends).
 
+get_task([task(StartT, _, _, _, Module-'Group')|Tasks], Module, StartT).
+
+get_task([Task|Tasks], Module, StartT):-
+    get_task(Tasks, Module, StartT).
+
+group_time(Students, Tasks):-
+    group(Module, [Student1, Student2]),
+    nth0(Index, Students, Student1),
+    nth0(Index, Tasks, Tasks1),
+    nth0(Index2, Students, Student2),
+    nth0(Index2, Tasks, Tasks2),
+    get_task(Tasks1, Module, StartT1),
+    get_task(Tasks2, Module, StartT2),
+    StartT1 #= StartT2.
+
 acc_constraints([], [], _).
 acc_constraints([StartTimes|StartTimess], [EndTimes|EndTimess], [Task|Tasks]) :-
     maximum(End, EndTimes),
@@ -35,21 +50,15 @@ acc_constraints([StartTimes|StartTimess], [EndTimes|EndTimess], [Task|Tasks]) :-
     labeling([minimize(End)], StartTimes),
     acc_constraints(StartTimess, EndTimess, Tasks).
 
+write_schedules([Student|Students], [Task|Tasks], [StartTime|StartTimes]):-
+    write(Student), nl,
+    write(StartTime).
+
 study(Students) :-
     all_tasks(Students, Tasks, StartTimes, EndTimes),
-    write(Tasks),
-
+    group_time(Students, Tasks),
     acc_constraints(StartTimes, EndTimes, Tasks),
-    write(Student), nl,
-    write(StartTimes), nl,
-    write(EndTimes), nl, nl.
-
-study_time([H|T]):-
-    study(H),S
-    study_time(T).
-
-study_time([_]).
-
+    write_schedules(Students, Tasks, StartTimes).
 
 %enrolled_in(Student, Module).
 enrolled_in('Asdrubal', 'ESOF').
@@ -76,16 +85,3 @@ study_hours('RCOM', 2, 3).
 
 %group(Module, Students)
 group('PLOG', ['Asdrubal', 'Felismina']).
-
-
-/*  Students is the list of students, then you add a list with their curricular units */
-students(Students):-
-    curricular_units(Students).
-
-curricular_units([]).
-curricular_units([H|T]):-
-    write(H), write(' curricular units: '),
-    read(CurricularUnits),
-    write(CurricularUnits), nl, nl,
-
-    curricular_units(T).
