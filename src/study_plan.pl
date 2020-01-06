@@ -50,15 +50,31 @@ acc_constraints([StartTimes|StartTimess], [EndTimes|EndTimess], [Task|Tasks]) :-
     labeling([minimize(End)], StartTimes),
     acc_constraints(StartTimess, EndTimess, Tasks).
 
-write_schedules([Student|Students], [Task|Tasks], [StartTime|StartTimes]):-
+write_schedules([], []).
+write_schedules([Student|Students], [Task|Tasks]):-
     write(Student), nl,
-    write(StartTime).
+    write_tasks(Task), nl,
+    write_schedules(Students, Tasks).
+
+write_tasks([]).
+write_tasks([task(StartT, _, EndT, _, Module-'Group')|Tasks]):-
+    StartTime is StartT + 1,
+    EndTime is EndT + 1,
+    write(Module), write(' - Group work: slots '), write(StartTime), write(' to '), write(EndTime), nl,
+    write_tasks(Tasks).
+
+write_tasks([task(StartT, _, EndT, _, Module-'Individual')|Tasks]):-
+    StartTime is StartT + 1,
+    EndTime is EndT + 1,
+    write(Module), write(' - Individual: slots '), write(StartTime), write(' to '), write(EndTime), nl,
+    write_tasks(Tasks).
 
 study(Students) :-
     all_tasks(Students, Tasks, StartTimes, EndTimes),
     group_time(Students, Tasks),
-    acc_constraints(StartTimes, EndTimes, Tasks),
-    write_schedules(Students, Tasks, StartTimes).
+    acc_constraints(StartTimes, EndTimes, Tasks), nl,
+    write('Slots 1 to 10 represent day 1, 11 to 20 day 2, and so on!'), nl, nl,
+    write_schedules(Students, Tasks).
 
 %enrolled_in(Student, Module).
 enrolled_in('Asdrubal', 'ESOF').
