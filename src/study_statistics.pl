@@ -8,5 +8,6 @@ start :-
     'Joaquim', 'Zulmira', 'Cristiano', 'Paula', 'Napoleao', 'Fatima',
     'Zezinho', 'Carlos', 'Celia', 'Marta', 'Paulo', 'Mafalda']),
     statistics(walltime, [T1|_]),
+    fd_statistics,
     T is T1 - T0,
     format('study took ~3d sec.~n', [T]).
