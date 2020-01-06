@@ -21,8 +21,8 @@ all_tasks([Student|Students], [Task|Tasks], [Start|Starts], [End|Ends]) :-
     %elements as modules the student is enrolled in
     length(Start, Length),
     length(End, Length),
-    domain(Start, 0, 59),
-    domain(End, 1, 60),
+    domain(Start, 1, 60),
+    domain(End, 2, 61),
     
     %generate list of tasks to use in the cumulative predicate
     make_tasks(Modules, Start, End, Task),
@@ -49,15 +49,17 @@ group_time(Students, Tasks):-
     length(GroupList, Length),
     length(Starts1, Length),
     length(Starts2, Length),
-    constrain_groups(Students, GroupList, Starts1, Starts2, Tasks),
-    nl, write(GroupList), nl, write(Starts1), nl, write(Starts2), nl.
+    constrain_groups(Students, GroupList, Starts1, Starts2, Tasks).
 
-acc_constraints([], [], _).
-acc_constraints([StartTimes|StartTimess], [EndTimes|EndTimess], [Task|Tasks]) :-
-    maximum(End, EndTimes),
+acc_constraints([], [], _, AllStartTimes, MaxValues):-
+    maximum(MaxValue, MaxValues),
+    labeling([minimize(MaxValue)], AllStartTimes).
+
+acc_constraints([StartTimes|StartTimess], [EndTimes|EndTimess], [Task|Tasks], AllStartTimes, MaxValue) :-
+    append(StartTimes, AllStartTimes, StartTimes2),
+    append(EndTimes, MaxValue, MaxValues),
     cumulative(Task),
-    labeling([minimize(End)], StartTimes),
-    acc_constraints(StartTimess, EndTimess, Tasks).
+    acc_constraints(StartTimess, EndTimess, Tasks, StartTimes2, MaxValues).
 
 write_schedules([], []).
 write_schedules([Student|Students], [Task|Tasks]):-
@@ -67,21 +69,17 @@ write_schedules([Student|Students], [Task|Tasks]):-
 
 write_tasks([]).
 write_tasks([task(StartT, _, EndT, _, Module-'Group')|Tasks]):-
-    StartTime is StartT + 1,
-    EndTime is EndT + 1,
-    write(Module), write(' - Group work: slots '), write(StartTime), write(' to '), write(EndTime), nl,
+    write(Module), write(' - Group work: slots '), write(StartT), write(' to '), write(EndT), nl,
     write_tasks(Tasks).
 
 write_tasks([task(StartT, _, EndT, _, Module-'Individual')|Tasks]):-
-    StartTime is StartT + 1,
-    EndTime is EndT + 1,
-    write(Module), write(' - Individual: slots '), write(StartTime), write(' to '), write(EndTime), nl,
+    write(Module), write(' - Individual: slots '), write(StartT), write(' to '), write(EndT), nl,
     write_tasks(Tasks).
 
-study(Students) :-
+study(Students):-
     all_tasks(Students, Tasks, StartTimes, EndTimes),
     group_time(Students, Tasks),
-    acc_constraints(StartTimes, EndTimes, Tasks), nl,
+    acc_constraints(StartTimes, EndTimes, Tasks, [], []), nl,
     write('Slots 1 to 10 represent day 1, 11 to 20 day 2, and so on!'), nl, nl,
     write_schedules(Students, Tasks).
 
