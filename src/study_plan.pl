@@ -80,11 +80,20 @@ study(Students) :-
 enrolled_in('Asdrubal', 'ESOF').
 enrolled_in('Asdrubal', 'PLOG').
 enrolled_in('Asdrubal', 'LTW').
-enrolled_in('Asdrubal', 'RCOM').
-enrolled_in('Asdrubal', 'LAIG').
+/*enrolled_in('Asdrubal', 'RCOM').
+enrolled_in('Asdrubal', 'LAIG').*/
 enrolled_in('Felismina', 'PLOG').
+enrolled_in('Felismina', 'ESOF').
+enrolled_in('Felismina', 'LTW').
+/*enrolled_in('Felismina', 'RCOM').
 enrolled_in('Felismina', 'LAIG').
+enrolled_in('Felismina', 'LCOM').*/
 enrolled_in('Bernardete', 'LTW').
+enrolled_in('Bernardete', 'ESOF').
+enrolled_in('Bernardete', 'PLOG').
+enrolled_in('Eleuterio', 'LTW').
+enrolled_in('Eleuterio', 'ESOF').
+enrolled_in('Eleuterio', 'PLOG').
 
 %study_hours(Module, Type, Time).
 %Type is 1 - individual work, 2 - group work
@@ -100,4 +109,9 @@ study_hours('RCOM', 1, 3).
 study_hours('RCOM', 2, 3).
 
 %group(Module, Students)
-group('PLOG', ['Asdrubal', 'Felismina']).
+group('ESOF', ['Asdrubal', 'Felismina']).
+group('ESOF', ['Bernardete', 'Eleuterio']).
+group('PLOG', ['Asdrubal', 'Eleuterio']).
+group('PLOG', ['Bernardete', 'Felismina']).
+group('LTW', ['Asdrubal', 'Bernardete']).
+group('LTW', ['Eleuterio', 'Felismina']).
